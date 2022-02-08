@@ -1,0 +1,11 @@
+version: '3'
+services:
+ php-fpm:
+  build: .
+  container_name: my-web-container
+  volumes:
+  - ./dev:/var/www/html
+  ports:
+  - "5000:8000"
+  environment:
+    PHP_IDE_CONFIG: serverName=toto
