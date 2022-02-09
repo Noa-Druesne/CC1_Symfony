@@ -19,6 +19,9 @@ class Activite
     #[ORM\Column(type: 'string', length: 255)]
     private $description;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'activite')]
+    private $animateur;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class Activite
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getAnimateur(): ?user
+    {
+        return $this->animateur;
+    }
+
+    public function setAnimateur(?user $animateur): self
+    {
+        $this->animateur = $animateur;
 
         return $this;
     }
