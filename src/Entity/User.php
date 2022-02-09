@@ -28,7 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $prenom;
 
     #[ORM\Column(type: 'json')]
-    private $roles = ['animateur'];
+    private $roles = ['ROLE_ENFANT'];
 
     #[ORM\Column(type: 'string')]
     private $password;
@@ -36,9 +36,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'animateur', targetEntity: Activite::class)]
     private $activite;
 
+    #[ORM\ManyToMany(targetEntity: Activite::class, inversedBy: 'users')]
+    private $enfants;
+
     public function __construct()
     {
         $this->activite = new ArrayCollection();
+        $this->enfants = new ArrayCollection();
+    }
+
+    public function __toString(){
+        return $this->getNom()." ".$this->getPrenom();
     }
 
     public function getId(): ?int
@@ -168,6 +176,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $activite->setAnimateur(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Activite[]
+     */
+    public function getEnfants(): Collection
+    {
+        return $this->enfants;
+    }
+
+    public function addEnfant(Activite $enfant): self
+    {
+        if (!$this->enfants->contains($enfant)) {
+            $this->enfants[] = $enfant;
+        }
+
+        return $this;
+    }
+
+    public function removeEnfant(Activite $enfant): self
+    {
+        $this->enfants->removeElement($enfant);
 
         return $this;
     }

@@ -11,6 +11,16 @@
             <li class="nav-item">
                 <a class="nav-link" href="/activite">Activité</a>
             </li>
+            {% if is_granted("ROLE_ANIMATEUR") %}
+            <li class="nav-item">
+                <a class="nav-link" href="/enfantsInscrits">Listes</a>
+            </li>
+            {% endif %}
+            {% if is_granted("ROLE_ENFANT") %}
+            <li class="nav-item">
+                <a class="nav-link" href="/inscriptionEnfant">Listes Inscription</a>
+            </li>
+            {% endif %}
         </ul>
         <ul class="navbar-nav flex-fill w-100 justify-content-end">
             {% if app.user %}

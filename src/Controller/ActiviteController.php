@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Activite;
+use App\Entity\Enfant;
 use App\Form\ActiviteType;
 use App\Repository\ActiviteRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function Sodium\add;
 
 #[Route('/activite')]
 class ActiviteController extends AbstractController
@@ -26,10 +28,15 @@ class ActiviteController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $activite = new Activite();
-        $form = $this->createForm(ActiviteType::class, $activite);
+        $form = $this->createFormBuilder($activite)
+            ->add('nom')
+            ->add('description')
+            ->getForm()
+        ;
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $activite->setAnimateur($this->getUser());
             $entityManager->persist($activite);
             $entityManager->flush();
 
@@ -53,6 +60,7 @@ class ActiviteController extends AbstractController
     #[Route('/{id}/edit', name: 'activite_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Activite $activite, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted("ROLE_ANIMATEUR");
         $form = $this->createForm(ActiviteType::class, $activite);
         $form->handleRequest($request);
 
@@ -71,11 +79,32 @@ class ActiviteController extends AbstractController
     #[Route('/{id}', name: 'activite_delete', methods: ['POST'])]
     public function delete(Request $request, Activite $activite, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted("ROLE_ANIMATEUR");
         if ($this->isCsrfTokenValid('delete'.$activite->getId(), $request->request->get('_token'))) {
             $entityManager->remove($activite);
             $entityManager->flush();
         }
 
+        return $this->redirectToRoute('activite_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/inscriptionEnfants', name: 'activite_inscription_enfant', methods: ['GET','POST'])]
+    public function inscription(Activite $activite, EntityManagerInterface $entityManager): Response
+    {
+        $user=$this->getUser();
+        $activite->addUser($user);
+        $entityManager->persist($activite);
+        $entityManager->flush();
+        return $this->redirectToRoute('activite_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/desincription', name: 'activite_desinscription', methods: ['GET','POST'])]
+    public function desinscription(Activite $activite, EntityManagerInterface $entityManager): Response
+    {
+        $user=$this->getUser();
+        $activite->removeUser($user);
+        $entityManager->persist($activite);
+        $entityManager->flush();
         return $this->redirectToRoute('activite_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -11,6 +11,9 @@
                 <th>Id</th>
                 <th>Nom</th>
                 <th>Description</th>
+                <th>Animateur</th>
+                <th>Inscription enfant</th>
+                <th>Desinscription</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -20,6 +23,9 @@
                 <td>{{ activite.id }}</td>
                 <td>{{ activite.nom }}</td>
                 <td>{{ activite.description }}</td>
+                <td>{{ activite.animateur.nom }} {{ activite.animateur.prenom }}</td>
+                <td><a href="{{ path('activite_inscription_enfant', {'id': activite.id}) }}">S'inscrire</a></td>
+                <td><a href="{{ path('activite_desinscription', {'id': activite.id}) }}">Désinscription</a></td>
                 <td>
                     <a href="{{ path('activite_show', {'id': activite.id}) }}">show</a>
                     <a href="{{ path('activite_edit', {'id': activite.id}) }}">edit</a>
@@ -32,6 +38,5 @@
         {% endfor %}
         </tbody>
     </table>
-
     <a href="{{ path('activite_new') }}">Create new</a>
 {% endblock %}
