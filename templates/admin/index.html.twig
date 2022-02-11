@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+
+{% block body %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Prenom</th>
+            <th>Animateur</th>
+            <th>Administrateur</th>
+        </tr>
+        {% for user in users %}
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.nom }}</td>
+            <td>{{ user.prenom }}</td>
+            {% if "ROLE_ANIMATEUR" in user.roles %}
+                <td>Role Animateur - <a href="{{ path('enleverAnimateur', {'id': user.id}) }}">Enlever</a> </td>
+            {% else %}
+                <td>Role Animateur - <a href="{{ path('ajouterAnimateur', {'id': user.id}) }}">Ajouter</a> </td>
+            {% endif %}
+            {% if "ROLE_ADMIN" in user.roles %}
+                <td>Role Admin - <a href="{{ path('enleverAdmin', {'id': user.id}) }}">Enlever</a> </td>
+            {% else %}
+                <td>Role Admin - <a href="{{ path('ajouterAdmin', {'id': user.id}) }}">Ajouter</a> </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

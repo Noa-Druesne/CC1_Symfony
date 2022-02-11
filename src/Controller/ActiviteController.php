@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Activite;
-use App\Entity\Enfant;
 use App\Form\ActiviteType;
 use App\Repository\ActiviteRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,7 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function Sodium\add;
 
 #[Route('/activite')]
 class ActiviteController extends AbstractController
@@ -49,7 +47,7 @@ class ActiviteController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'activite_show', methods: ['GET'])]
+    #[Route('/{id}/show', name: 'activite_show', methods: ['GET'])]
     public function show(Activite $activite): Response
     {
         return $this->render('activite/show.html.twig', [
@@ -106,5 +104,21 @@ class ActiviteController extends AbstractController
         $entityManager->persist($activite);
         $entityManager->flush();
         return $this->redirectToRoute('activite_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/listes/{id}', name: 'activite_listes', methods: ['GET'])]
+    public function listesEnfants(Activite $activite): Response
+    {
+        return $this->renderForm('activite/listesEnfants.html.twig', [
+            'users' => $activite->getUsers(),
+        ]);
+    }
+
+    #[Route('/listesInscriptions', name: 'activite_listes_inscription', methods: ['GET'])]
+    public function listesInscriptions(): Response
+    {
+        return $this->renderForm('activite/listesInscription.html.twig', [
+            'inscriptions' => $this->getUser()->getEnfants(),
+        ]);
     }
 }

@@ -4,7 +4,6 @@
 
 {% block body %}
     <h1>Activite index</h1>
-
     <table class="table">
         <thead>
             <tr>
@@ -13,7 +12,7 @@
                 <th>Description</th>
                 <th>Animateur</th>
                 <th>Inscription enfant</th>
-                <th>Desinscription</th>
+                <th>Listes</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -24,8 +23,20 @@
                 <td>{{ activite.nom }}</td>
                 <td>{{ activite.description }}</td>
                 <td>{{ activite.animateur.nom }} {{ activite.animateur.prenom }}</td>
-                <td><a href="{{ path('activite_inscription_enfant', {'id': activite.id}) }}">S'inscrire</a></td>
-                <td><a href="{{ path('activite_desinscription', {'id': activite.id}) }}">Désinscription</a></td>
+                <td>
+                    {% if is_granted("ROLE_ENFANT") %}
+                    {% if app.user not in activite.users %}
+                    <a href="{{ path('activite_inscription_enfant', {'id': activite.id}) }}">S'inscrire</a>
+                    {% else %}
+                    <a href="{{ path('activite_desinscription', {'id': activite.id}) }}">Désinscription</a>
+                    {% endif %}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if is_granted("ROLE_ANIMATEUR") %}
+                    <a href="{{ path('activite_listes', {'id': activite.id}) }}">Consulter la liste</a>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{{ path('activite_show', {'id': activite.id}) }}">show</a>
                     <a href="{{ path('activite_edit', {'id': activite.id}) }}">edit</a>
